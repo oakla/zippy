@@ -1,0 +1,13 @@
+# How does the purpose of this file differ from the dependency list in  
+# pyproject.toml or setup.cfg? 
+#  
+# In short: 
+# > "It is not considered best practice to use install_requires[/dependencies] to pin  
+# dependencies to specific versions" 
+# > "Whereas install_requires[/dependencies] requirements are minimal, requirements files  
+# often contain an exhaustive listing of pinned versions for the purpose of  
+# achieving repeatable installations of a complete environment." 
+#  
+# Source: 
+# https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/ 
+importlib-metadata; python_version<"3.10" 

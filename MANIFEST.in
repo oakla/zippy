@@ -1,0 +1,12 @@
+# If you don't have a setup.cfg, you don't need a MANIFEST.in to include data files in src/ 
+# MANIFEST.in -- example from https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html 
+graft src 
+graft tests 
+graft docs 
+# `-> adds all files inside a directory 
+
+include tox.ini 
+# `-> matches file paths relative to the root of the project 
+
+global-exclude *~ *.py[cod] *.so 
+# `-> matches file names (regardless of directory) 
