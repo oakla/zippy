@@ -1,0 +1,10 @@
+Earlier this year, Singapore-based embedded security researcher yeokm1 built a ChatGPT client for MS-DOS.
+
+Now they're back with a new project:
+HDMI is a relatively modern video connector we take for granted on modern PCs and monitors. Now vintage PCs can join in the fun too with a native connection to modern HDMI monitors without any additional adapter.
+
+Two years ago, I learned of an open-source project called Graphics Gremlin by Eric Schlaepfer who runs the website Tubetime.us. It is an 8-bit ISA graphics card that supports display standards like Color Graphics Adapter (CGA) and Monochrome Display Adapter (MDA). CGA and MDA are display standards used by older IBM(-compatible) PCs in the 1980s. The frequencies and connectors used by CGA and MDA are no longer supported by modern monitors hence it is difficult for older PCs of the 1980s era to have modern displays connected to them without external adapters. Graphics Gremline addresses this problem by using techniques like scan doubling (for CGA) and increasing the vertical refresh rate (for MDA) then outputing to a relatively newer but still old VGA port.
+
+I fabricated and assembled the design then installed it into my IBM5155... I decided to modify the Graphics Gremlin design so it can connect natively to an external HDMI monitor and service the internal Composite-based CRT at the same time.
+
+The post concludes triumphantly with a photo of their IBM 5155 running the CGA Compatibility Tester displaying the color palette.
