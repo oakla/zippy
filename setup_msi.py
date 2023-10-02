@@ -65,10 +65,10 @@ executables = [
 # shortcut_dir = "DesktopFolder",
 
 setup(
-    name="cfs_zippy",
-    version="1.0.1",
-    description="Submit current activity for reporting purposes",
-    author=AUTHOR,
+    # name="cfs_zippy",
+    # version="1.0.1",
+    # description="Quickly zip and encrypt files and/or folders",
+    # author=AUTHOR,
     url="http://autobots.avanteos.com.au/",
     executables=executables,
     options={
