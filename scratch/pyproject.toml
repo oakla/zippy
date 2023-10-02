@@ -3,7 +3,7 @@ requires = [ "setuptools",]
 build-backend = "setuptools.build_meta" 
 
 [project] 
-name = "boom_zip" 
-version = "0.1.0" 
+name = "cfs_zippy" 
+version = "1.0.1" 
 dependencies = [ "importlib-resources; python_version<\"3.10\"",] 
 
