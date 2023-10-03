@@ -10,7 +10,7 @@ DESCRIPTION="Quickly zip and encrypt files and/or folders"
 AUTHOR="Alexander Oakley"
 SCRIPT_NAME="cfs_zippy"
 WORDS_FILE="src/eff.org_files_2016_07_18_eff_large_wordlist.txt"
-ICON_PATH=r"assets/icon.ico"
+ICON_PATH=r"assets\Cog-Logo.ico"
 
 base = "Win32GUI" if sys.platform == "win32" else None
 
@@ -49,7 +49,7 @@ build_exe_options = {
     'replace_paths': [("*", "")],
     "excludes": [],
     # 'includes': ["pystray", "PIL", "os", "threading", "json", "datetime", "requests", "numpy", "io", "base64", "tkinter", "shutil", "sys", "swinlnk", "time"],
-    "include_files": ["assets/icon.ico", WORDS_FILE]
+    "include_files": [ICON_PATH, WORDS_FILE]
 }
 
 executables = [
