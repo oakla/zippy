@@ -1,0 +1,5 @@
+[DEFAULT]
+winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+
+[CUSTOM]
+

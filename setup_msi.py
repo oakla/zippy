@@ -5,11 +5,12 @@ from cx_Freeze import setup, Executable
 # py build_msi.py bdist_msi
 # ------------------------------------------------------------------
 
-DISPLAY_NAME='CFS-Zippy'
+DISPLAY_NAME='Zippy'
 DESCRIPTION="Quickly zip and encrypt files and/or folders"
 AUTHOR="Alexander Oakley"
-SCRIPT_NAME="cfs_zippy"
+SCRIPT_NAME="zippy"
 WORDS_FILE="src/eff.org_files_2016_07_18_eff_large_wordlist.txt"
+CONFIG_FILE_PATH=r"src\config.toml"
 ICON_PATH=r"assets\Cog-Logo.ico"
 
 base = "Win32GUI" if sys.platform == "win32" else None
@@ -41,15 +42,25 @@ bdist_msi_options = {
         "comments": DESCRIPTION
     },
     "install_icon": ICON_PATH,
-    "upgrade_code": "{12345678-0987-1234-0987-123456789098}",
+    "upgrade_code": "{009e6dd7-961b-4c53-bb3c-131508142c8e}",
     "data": msi_data
 }
 
 build_exe_options = {
     'replace_paths': [("*", "")],
-    "excludes": [],
-    # 'includes': ["pystray", "PIL", "os", "threading", "json", "datetime", "requests", "numpy", "io", "base64", "tkinter", "shutil", "sys", "swinlnk", "time"],
-    "include_files": [ICON_PATH, WORDS_FILE]
+    "excludes": [
+        "tomlkit",
+        "numpy",
+        "pyinstaller",
+        "setuptools"
+    ],
+    'includes': [
+    #   "pystray", "PIL", "os", "threading", 
+    #   "json", "datetime", "requests", "numpy", 
+    #   "io", "base64", "tkinter", "shutil", "sys", 
+    #   "swinlnk", "time"
+    ],
+    "include_files": [ICON_PATH, WORDS_FILE, CONFIG_FILE_PATH],
 }
 
 executables = [
