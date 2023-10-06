@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import random
 import string
+from typing import Optional
 import pyperclip
 import os
 from pathlib import Path
@@ -95,9 +96,8 @@ def get_winzip_cli_path() -> str:
 
 winzip_cli_path = get_winzip_cli_path()
 
-
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    print('running in a PyInstaller bundle')
+    messagebox.showinfo('running in a PyInstaller bundle')
     print(f"sys._MEIPASS: {sys._MEIPASS}") # type: ignore
 else:
     # print('running in a normal Python process')
@@ -155,8 +155,7 @@ def get_output_path(source_paths:list[Path], to_desktop:bool=True):
         output_file_name = source_paths[0].name
     else:
         print("Something went wrong. No source files were provided.")
-        input("Press Enter to continue...")
-        exit()
+        return None
 
     return uniquify((output_path_parent / output_file_name).with_suffix('.zip'))
 
@@ -170,8 +169,19 @@ def get_source_paths():
         exit()
     return source_paths
 
-def zip_with_key(source_paths:list[Path], secure_key=""):
+def notify_zip_failed(explanation:Optional[str]=None):
+    if not explanation:
+        explanation = "Zip command did not exectute successfully."
+    messagebox.showinfo("Zip didn't happen.", explanation)
+
+def zip(source_paths:list[Path], secure_key=""):
+    if not source_paths:
+        notify_zip_failed("No source files were provided.\n\nTry drag and drop a file onto the Zippy shortcut icon.")
+        return
     dest_path = get_output_path(source_paths)
+    if dest_path is None:
+        notify_zip_failed("Failed to get output path.")
+        return
     
     print(f"source_path: {source_paths}")
     print(f"dest_path: {dest_path}")
@@ -181,8 +191,14 @@ def zip_with_key(source_paths:list[Path], secure_key=""):
 
     commands += [dest_path] + source_paths
 
-    subprocess.run(commands, shell=True)
+    completed_process = subprocess.run(commands, shell=True)
 
+    # check completed process
+    if completed_process.returncode == 0:
+        return
+    else:
+        notify_zip_failed(f"Zip command did not exectute successfully.\n\n Error message: {completed_process.stderr}")
+        return
 
 # Create a function to handle the button click event
 def submit_key(option, text_input, source_paths, tk_root):
@@ -196,7 +212,7 @@ def submit_key(option, text_input, source_paths, tk_root):
     #     print("No option selected")
     selected_text = text_input.get()
     pyperclip.copy(selected_text)
-    zip_with_key(source_paths, selected_text)
+    zip(source_paths, selected_text)
     tk_root.destroy()
 
 def generate_passpharse(k_words:int=4):
@@ -211,7 +227,6 @@ def generate_password(length:int = 12):
     return password
 
 def run_zippy():
-
     # Function to update the text input based on the selected radio button
     def update_text_input():
         selected_option = radio_var.get()
@@ -225,11 +240,11 @@ def run_zippy():
 
     try:
         source_paths = get_source_paths()
-        if __name__ == "__main__" and not source_paths:
-            source_paths = [Path(r"C:\Users\Alexander.Oakley\OneDrive - Colonial First State\Desktop\words_pos.csv")]
+        # if __name__ == "__main__" and not source_paths:
+        #     source_paths = [Path(r"C:\Users\Alexander.Oakley\OneDrive - Colonial First State\Desktop\words_pos.csv")]
         if not source_paths:
             messagebox.showinfo("Error", "No source files were provided.\n\nTry drag and drop a file onto the Zippy shortcut icon.")
-            exit()
+            # exit()
         # Create the main application window
         root = tk.Tk()
         root.title("Create a secure key")
