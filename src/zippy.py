@@ -3,6 +3,7 @@ ask for password or generate one
 zip input file or folder to a pre-defined location"""
 
 import argparse
+from logging import config
 import subprocess
 from pathlib import Path
 import tkinter as tk
@@ -20,19 +21,81 @@ WORDS_FILE_NAME = r"eff.org_files_2016_07_18_eff_large_wordlist.txt"
 words_file_path = Path(__file__).resolve().with_name(WORDS_FILE_NAME)
 CONFIG_FILE = r"config.toml"
 config_file_path = Path(__file__).resolve().with_name(CONFIG_FILE)
-config_dict = toml.load(config_file_path)
 
-def get_default_winzip_path():
-    return config_dict["DEFAULT"]["winzip_cli_path"]
 
-def get_winzip_path_from_toml():
-    custom_settings = config_dict.get("CUSTOM")
-    if not custom_settings:
-        return get_default_winzip_path()
-    custom_winzip_path = custom_settings.get("winzip_cli_path")
-    if not custom_winzip_path:
-        return get_default_winzip_path()
-    return custom_winzip_path
+class ConfigKeys:
+    WINZIP_CLI_PATH = "winzip_cli_path"
+    PROMPT_USER_SELECTION_OF_WINZIP_CLI_PATH = "prompt_user_selection_of_winzip_cli_path"
+
+
+class Settings:
+
+
+    @classmethod
+    @property
+    def winzip_cli_path(cls): 
+        return cls.setting_dict['winzip_cli_path']
+    
+
+    @classmethod
+    @property
+    def setting_dict(cls):
+        default_settings = cls.get_default_settings()
+        if default_settings is None:
+            raise Exception(f"No default settings table found in config file ({CONFIG_FILE}).")
+        settings = default_settings.copy()
+        
+        custom_settings = cls.get_custom_settings()
+        if custom_settings is None:
+            return settings
+
+        for custom_setting_key, custom_setting_value in custom_settings.items():
+            settings[custom_setting_key] = custom_setting_value
+
+        return settings
+
+    @classmethod
+    @property
+    def prompt_user_selection_of_winzip_cli_path(cls) -> bool:
+        return cls.setting_dict[ConfigKeys.PROMPT_USER_SELECTION_OF_WINZIP_CLI_PATH]
+
+
+    @classmethod
+    def load_config_dict(cls):
+        return toml.load(config_file_path)
+    
+
+    @classmethod
+    def get_custom_settings(cls):
+        return cls.load_config_dict().get("CUSTOM")
+
+
+    @classmethod
+    def get_default_settings(cls):
+        return cls.load_config_dict().get("DEFAULT")
+
+
+    @classmethod
+    def overwrite_toml(cls, toml_file_path:Path, data:dict):
+        with open(toml_file_path, 'w') as fp:
+            toml.dump(data, fp)
+
+
+    @classmethod
+    def add_custom_setting(cls, key:str, value:str):
+        config_dict = cls.load_config_dict()
+        custom_settings = cls.get_custom_settings()
+        if custom_settings is None:
+            custom_settings = {}
+        custom_settings[key] = value
+        config_dict["CUSTOM"] = custom_settings
+        cls.overwrite_toml(config_file_path, config_dict)
+
+
+    @classmethod
+    def save_custom_winzip_path(cls, winzip_cli_path):
+        cls.add_custom_setting(ConfigKeys.WINZIP_CLI_PATH, winzip_cli_path)
+
 
 # Function to ask for a file path
 def ask_for_file():
@@ -73,28 +136,6 @@ def ask_for_winzip_cli_path(expected_path=""):
 #     # Start the tkinter main loop
 #     missing_path_root.mainloop()
 
-def overwrite_toml(toml_file_path:Path, data:dict):
-    with open(toml_file_path, 'w') as fp:
-        toml.dump(data, fp)
-
-def save_winzip_path(winzip_cli_path):
-    config_dict["CUSTOM"] = {"winzip_cli_path": winzip_cli_path}
-    overwrite_toml(config_file_path, config_dict)
-
-def get_winzip_cli_path() -> str:
-    winzip_cli_path = get_winzip_path_from_toml()
-
-    if Path(winzip_cli_path).exists():
-        return winzip_cli_path
-    else:
-        new_winzip_cli_path = ask_for_winzip_cli_path(winzip_cli_path)
-        if new_winzip_cli_path:
-            save_winzip_path(new_winzip_cli_path)
-            return new_winzip_cli_path
-        else:
-            exit()
-
-winzip_cli_path = get_winzip_cli_path()
 
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     messagebox.showinfo('running in a PyInstaller bundle')
@@ -185,7 +226,7 @@ def zip(source_paths:list[Path], secure_key=""):
     
     print(f"source_path: {source_paths}")
     print(f"dest_path: {dest_path}")
-    commands = [winzip_cli_path]
+    commands = [Settings.winzip_cli_path]
     if secure_key:
         commands.append(f"-s{secure_key}")
 

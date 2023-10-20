@@ -1,5 +1,10 @@
 [DEFAULT]
 winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+prompt_user_selection_of_winzip_cli_path=false
 
+# Custom settings override default settings when present
+# Uncomment lines to override the default settings
 [CUSTOM]
+# prompt_user_selection_of_winzip_cli_path=true
+# winzip_cli_path = "c:/program files/winzip/wzzip.exe"
 
