@@ -2,7 +2,6 @@
 ask for password or generate one
 zip input file or folder to a pre-defined location"""
 
-from logging import config
 import subprocess
 from pathlib import Path
 import tkinter as tk
@@ -16,6 +15,9 @@ from pathlib import Path
 import sys
 from zippy.settings import Settings
 from zippy.path_management import uniquify
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Zippy:
@@ -24,12 +26,19 @@ class Zippy:
             self, 
             source_paths:list[Path],
             ):
+        logging.debug(f"Source paths to be zipped are {source_paths}")
         self.source_paths = source_paths
 
-        with open(Settings.words_file_path, 'r') as fp:
-            self.phrase_phrase_words = [x.split('\t')[1] for x in fp.read().splitlines() if len(x) > 1]
+        try:
+            logger.debug(f"Attempting to open and read words file ({Settings.phrase_words_file_path}).")
+            with open(Settings.phrase_words_file_path, 'r') as fp:
+                self.phrase_phrase_words = [x.split('\t')[1] for x in fp.read().splitlines() if len(x) > 1]
+        except Exception as e:
+            logger.critical(f"Error while opening 'word file' expected at {Settings.phrase_words_file_path}: {e}")
 
         if not self.check_winzip_cli_path_exists():
+            logger.error(f"WinZip CLI executable was not found.")
+            # Might be wise to use PyZip instead of WinZip
             self.show_error_message(
                 f'The WinZip CLI executbale was not found at the expected path: {Settings.winzip_cli_path}.\n\n' \
                 f'You can view and edit the expected path in the config file at {Settings.config_file_path}.\n\n' \
@@ -43,10 +52,14 @@ class Zippy:
     def show_error_message(self, message:str):
         messagebox.showinfo("Error", message)
 
+
+    # I think this is left over from when this project used PyInstaller
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        logger.debug(f"`getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')` evalutated as `True`")
         messagebox.showinfo('running in a PyInstaller bundle')
         print(f"sys._MEIPASS: {sys._MEIPASS}") # type: ignore
     else:
+        logger.debug(f"`getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS')` evalutated as `False`")
         # print('running in a normal Python process')
         ...
 
@@ -57,7 +70,9 @@ class Zippy:
         - Send to desktop (default)
         - Send to the parent folder
         """
+        logger.debug(f"Determining output path")
         if to_desktop:
+            logger.debug(f"Program config indicates output should go to Desktop")
             output_path_parent = Path(os.path.join(os.path.join(os.environ['USERPROFILE']), "OneDrive - Colonial First State", 'Desktop'))
         else:
             output_path_parent = source_paths[0].parent
@@ -70,6 +85,7 @@ class Zippy:
             print("Something went wrong. No source files were provided.")
             return None
 
+        logger.info(f"output parent will be {output_path_parent}")
         return uniquify((output_path_parent / output_file_name).with_suffix('.zip'))
 
     def notify_zip_failed(self,explanation:Optional[str]=None):
@@ -82,28 +98,54 @@ class Zippy:
             self.notify_zip_failed("No source files were provided.\n\nTry drag and drop a file onto the Zippy shortcut icon.")
             return
         dest_path = self.get_output_path(source_paths)
+        logger.info(f"Zip output will be written to {dest_path}")
         if dest_path is None:
+            logger.warning(f"Zip output path came back as None.")
             self.notify_zip_failed("Failed to get output path.")
             return
         
-        print(f"source_path: {source_paths}")
-        print(f"dest_path: {dest_path}")
-        commands = [Settings.winzip_cli_path]
+        logger.info(f"{secure_key=}")
+        logger.info(f"{source_paths=}")
+        logger.info(f"{dest_path=}")
+        commands = [Settings.winzip_cli_path] + [dest_path]
         if secure_key:
-            secure_key = '"' + secure_key + '"'
-            commands.append(f"-s{secure_key}")
+            secure_key = secure_key
+            commands.append(f'-s{secure_key}')
             commands.append("-yc") # Use AES Encryption
 
-        commands += [dest_path] + source_paths
+        commands += source_paths
 
-        completed_process = subprocess.run(commands, shell=True)
+        logger.debug(f"Calling `subprocess.run(...) with: {commands}")
+        completed_process = subprocess.run(
+            commands, 
+            shell=True,
+            capture_output=True,
+            text=True
+            )
+        
+        returncode=completed_process.returncode
+        stdout=completed_process.stdout
+        stderr=completed_process.stderr
+
+
+        logger.debug("subprocess complete.")
 
         # check completed process
         if completed_process.returncode == 0:
+            logger.debug(f"returncode == `{returncode=}`")
+            logger.debug(f"stdout == `{stdout=}`")
+            logger.debug(f"stderr == `{stderr=}`")
             return
         else:
-            self.notify_zip_failed(f"Zip command did not exectute successfully.\n\n Error message: {completed_process.stderr}")
+            # TODO: Problem is almost definitely here
+            logger.critical(f"subprocess completed with returncode NOT equal to 0")
+            logger.critical(f"{returncode=}")
+            logger.critical(f"{stderr=}")
+            logger.critical(f"{stdout=}")
+            self.notify_zip_failed(f"Zip command did not exectute successfully.\n\n Error message: {completed_process.stdout}")
             return
+
+
 
     # Create a function to handle the button click event
     def submit_key(self, option, text_input, source_paths, tk_root):
@@ -206,6 +248,6 @@ class Zippy:
 
             # input("Press Enter to continue...")
         except Exception as e:
-            print(e)
+            logger.critical(f"Exception caught: {e=}")
             # input("Press Enter to continue...")
 

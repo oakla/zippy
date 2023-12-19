@@ -1,9 +1,15 @@
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 
 def uniquify(path:Path, modifier:int=0):
     """
     If the path exists, append a number to it to make it unique.
     """
+    logger.debug(f"Finding path that does not already exist.")
     if modifier == 0:
         candidate_path = path
     else:

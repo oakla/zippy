@@ -1,7 +1,9 @@
 from zippy.core import Zippy
 import argparse
 from pathlib import Path
+import logging
 
+logger = logging.getLogger(__name__)
 
 def get_source_paths():
     parser = argparse.ArgumentParser()
@@ -10,6 +12,7 @@ def get_source_paths():
         args = parser.parse_args()
         source_paths = [Path(arg) for arg in args.source_paths]
     except Exception as e:
+        logger.critical(f"Error while reading initial program input: {e}")
         exit()
     return source_paths
 

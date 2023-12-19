@@ -1,5 +1,8 @@
 import toml
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 WORDS_FILE_NAME = r"eff.org_files_2016_07_18_eff_large_wordlist.txt"
@@ -24,15 +27,16 @@ class Settings:
     @classmethod
     @property
     def winzip_cli_path(cls): 
-        return cls.setting_dict['winzip_cli_path']
+        return cls.setting_dict()['winzip_cli_path']
     
 
     @classmethod
-    @property
     def setting_dict(cls):
         default_settings = cls.get_default_settings()
         if default_settings is None:
-            raise Exception(f"No default settings table found in config file ({CONFIG_FILE}).")
+            message = f"No default settings table found in config file ({CONFIG_FILE})."
+            logger.error(message)
+            raise Exception(message)
         settings = default_settings.copy()
         
         custom_settings = cls.get_custom_settings()
@@ -47,19 +51,16 @@ class Settings:
     @classmethod
     @property
     def prompt_user_selection_of_winzip_cli_path(cls) -> bool:
-        return cls.setting_dict[ConfigKeys.PROMPT_USER_SELECTION_OF_WINZIP_CLI_PATH]
+        logger.debug("Checking config to see if user should be asked to select WinZip path.")
+        return_bool = cls.setting_dict()[ConfigKeys.PROMPT_USER_SELECTION_OF_WINZIP_CLI_PATH]
+        logger.debug(f"{ConfigKeys.PROMPT_USER_SELECTION_OF_WINZIP_CLI_PATH} is set to {return_bool}")
+        return return_bool
 
 
     @classmethod
     @property
     def config_file_path(cls):
         return config_file_path
-
-
-    @classmethod
-    @property
-    def words_file_path(cls):
-        return words_file_path
 
 
     @classmethod
