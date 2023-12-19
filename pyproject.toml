@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project] 
 name = "zippy" 
-version = "1.0.11" 
-dependencies = [ "importlib-resources; python_version<\"3.10\"",] 
+version = "1.0.14" 
+dependencies = [ "importlib-resources; python_version<\"3.10\"", "pyperclip"] 
 authors=[
     {name="Alexander Oakley", email="alexander.oakley@cfs.com.au"},
 ]

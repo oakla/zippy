@@ -102,6 +102,7 @@ build_exe_options = {
         CONFIG_FILE_PATH],
 }
 
+# input("Creating executable settings(?) object")
 executables = [
         Executable(
             script=SCRIPT_TO_EXECUTE,
@@ -114,6 +115,7 @@ executables = [
 # shortcut_name = "MyTime",
 # shortcut_dir = "DesktopFolder",
 
+# input("About to call `setup(...)`")
 setup(
     # name="cfs_zippy",
     # version="1.0.1",
