@@ -1,5 +1,3 @@
-from cgitb import handler
-from .core import Zippy
 import os
 import logging
 
