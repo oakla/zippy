@@ -9,7 +9,6 @@ from typing import Optional
 
 BEST_PRACTICE = False
 
-
 DEFAULT_FONT = {}
 # DEFAULT_FONT["family"] = "Arial"
 DEFAULT_FONT["family"] = "Calibri"
@@ -248,11 +247,6 @@ class ZippyGui:
 
         tk_heading_font = font.nametofont("TkHeadingFont")
         tk_heading_font.config(**HEADING_FONT)
-        # tk_heading_font["size"] = 16
-        # # tk_heading_font['weight'] = 'bold'
-        # tk_heading_font["family"] = "Calibri"
-        # # tk_heading_font['family'] = 'Segoe UI'
-        # # tk_heading_font['underline'] = 1
 
         # Create a notebook to hold the frames
         notebook = ttk.Notebook(self.root, padding="3 3 12 12", style="TNotebook")
@@ -281,7 +275,7 @@ class ZippyGui:
         self.password_choice_frame.grid(column=0, row=1)
 
         # Submit Button
-        button_submit = ttk.Button(master=self.root, text="Submit", command=self.submit_and_zip)  # type: ignore
+        button_submit = ttk.Button(master=self.root, text="Submit", command=self.submit_secure_key)  # type: ignore
         button_submit.grid(column=0, row=5, sticky=tk.E, padx=6, pady=6)
 
         self.root.mainloop()
@@ -296,9 +290,10 @@ class ZippyGui:
 
         return instructions_frame
 
-    def submit_and_zip(self):
+    def submit_secure_key(self):
         if not self.password_choice_frame.is_secure_key_valid():
             return
+        
         self.secure_key = self.password_choice_frame.get_secure_key()
         pyperclip.copy(self.secure_key)
         self.root.destroy()
