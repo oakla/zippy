@@ -181,7 +181,7 @@ class Zippy:
         special_characters = "!@#$%^&*()_+?"
         
         characters = string.ascii_letters + string.digits + special_characters
-        password = ''.join(random.choice(characters) for i in range(length))
+        password = ''.join(random.choice(characters) for _ in range(length))
         return password
 
     def run(self):
