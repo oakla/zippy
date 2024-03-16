@@ -17,7 +17,8 @@ MAIN_SCRIPT_NAME = "__main__"
 PACKAGE_DIR="src/zippy"
 SCRIPT_TO_EXECUTE = f'{PACKAGE_DIR}/{MAIN_SCRIPT_NAME}.py'
 WORDS_FILE=f"{PACKAGE_DIR}/eff.org_files_2016_07_18_eff_large_wordlist.txt"
-CONFIG_FILE_PATH=f"{PACKAGE_DIR}/config.toml"
+COMMON_PASSWORDS_FILE=f"{PACKAGE_DIR}/src/zippy/top-100000-common-passwords.txt"
+CONFIG_FILE_PATH=f"{PACKAGE_DIR}/settings.toml"
 
 # Outputs
 DISPLAY_NAME='Zippy'

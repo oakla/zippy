@@ -2,6 +2,8 @@
 # Manually Added 
 ########################### 
 .idea 
+test/outputs/
+test/inputs/
 
 ########################### 
 

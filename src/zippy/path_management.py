@@ -4,6 +4,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+WORDS_FILE_NAME = r"eff.org_files_2016_07_18_eff_large_wordlist.txt"
+words_file_path = Path(__file__).resolve().with_name(WORDS_FILE_NAME)
+CONFIG_FILE = r"settings.toml"
+config_file_path = Path(__file__).resolve().with_name(CONFIG_FILE)
+COMMON_PASSWORD_FILE_NAME = "top-100000-common-passwords.txt"
+common_passwords_file_path = Path(__file__).resolve().with_name(COMMON_PASSWORD_FILE_NAME)
+
+
 
 def uniquify(path:Path, modifier:int=0):
     """
@@ -24,7 +32,7 @@ def uniquify(path:Path, modifier:int=0):
 # ====================================
 # None of the below are used right now
 from tkinter import filedialog, messagebox
-from zippy.settings import Settings
+# from zippy.settings import Settings
 # Function to ask for a file path
 def ask_for_file(self):
     file_path = filedialog.askopenfilename()
@@ -32,19 +40,20 @@ def ask_for_file(self):
         return file_path
     else:
         return None
+ 
+# TODO: find a home for this OR delete it
+# def ask_for_winzip_cli_path(self, expected_path=""):
+#     messagebox.showinfo(
+#         "Error", 
+#         f"WinZip CLI was not found at the expected path.\n\n"
+#             + "A file selection dialogue will appear after you close this message box. You will then have two options.\n\n" \
+#             "1) If you know the path to `wzzip.exe` on your machine, select it, then hit 'Open'.\n\n" \
+#             "2) If you do NOT know the path to `wzzip.exe` on your machine, just hit 'Cancel'.\n\n" \
+#             f"The expected path is {expected_path}.\n\n" \
+#             f"You can view and edit the saved paths in the config file at {Settings.config_file_path}.\n\n" \
+#             )
 
-def ask_for_winzip_cli_path(self, expected_path=""):
-    messagebox.showinfo(
-        "Error", 
-        f"WinZip CLI was not found at the expected path.\n\n"
-            + "A file selection dialogue will appear after you close this message box. You will then have two options.\n\n" \
-            "1) If you know the path to `wzzip.exe` on your machine, select it, then hit 'Open'.\n\n" \
-            "2) If you do NOT know the path to `wzzip.exe` on your machine, just hit 'Cancel'.\n\n" \
-            f"The expected path is {expected_path}.\n\n" \
-            f"You can view and edit the saved paths in the config file at {Settings.config_file_path}.\n\n" \
-            )
-
-    return self.ask_for_file()
+#     return self.ask_for_file()
 
 # def get_output_to_parent_folder_path(source_path:Path):
 #     """

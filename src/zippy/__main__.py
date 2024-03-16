@@ -1,4 +1,4 @@
-from zippy.core import Zippy
+from zippy import Zippy
 import argparse
 from pathlib import Path
 import logging
@@ -16,6 +16,4 @@ def get_source_paths():
         exit()
     return source_paths
 
-Zippy(
-    source_paths=get_source_paths()
-    ).run()
+Zippy().run(source_paths=get_source_paths(), to_desktop=True)
