@@ -100,7 +100,8 @@ build_exe_options = {
     "include_files": [
         # ICON_PATH, 
         # WORDS_FILE, 
-        CONFIG_FILE_PATH],
+        # CONFIG_FILE_PATH
+    ],
 }
 
 # input("Creating executable settings(?) object")
