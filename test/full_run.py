@@ -1,8 +1,14 @@
 from zippy import Zippy
 from pathlib import Path
+from zippy import path_management
+import logging
+
 
 source_paths=[
-    r"C:\Users\Alexander.Oakley\my-stuff-noonedrive\Code\proj\py-boom-zip\.gitignore"
+    r"test\inputs\a file with spaces.txt"
 ]
 
-Zippy([Path(x) for x in source_paths]).run()
+outpath_parent = path_management.uniquify(Path(r"test\outputs\output"))
+outpath_parent.mkdir()
+
+Zippy().run([Path(x) for x in source_paths], outpath_parent, to_desktop=False, )

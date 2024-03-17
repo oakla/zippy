@@ -1,0 +1,25 @@
+[DEFAULT]
+winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+best_practice=false
+prompt_user_selection_of_winzip_cli_path=false
+DEFAULT_FONT = {}
+# DEFAULT_FONT["family"] = "Arial"
+DEFAULT_FONT["family"] = "Calibri"
+# DEFAULT_FONT["family"] = "Segoe UI"
+DEFAULT_FONT["size"] = 12
+
+HEADING_FONT = {}
+HEADING_FONT["family"] = "Calibri"
+HEADING_FONT["size"] = 16
+# HEADING_FONT['weight'] = "bold"
+# HEADING_FONT['underline'] = 1
+
+# Custom settings override default settings when present
+# To override the default settings, either
+# - uncomment lines
+# - copy lines from default section and replace values
+[CUSTOM]
+# prompt_user_selection_of_winzip_cli_path=true
+# best_practice=true
+# winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+

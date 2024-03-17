@@ -1,0 +1,35 @@
+[paths]
+winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+
+[behaviour]
+best_practice=false
+prompt_user_selection_of_winzip_cli_path=false
+
+[default_font]
+family = "Calibri"
+size = 12
+
+[heading_font]
+family = "Calibri"
+size = 14
+
+# Custom settings override default settings when present
+# To change settings, either
+# - uncomment lines below and comment out any colliding settings
+# - edit the existing settings directly
+
+# prompt_user_selection_of_winzip_cli_path=true
+# best_practice=true
+# winzip_cli_path = "c:/program files/winzip/wzzip.exe"
+
+## Font family options include: Arial, Calibri, Segoe UI, and others
+# [default_font]
+# family = "Arial"
+# size = 10
+
+# [heading_font]
+# family = "Arial"
+# size = 14
+# weight = "bold"
+# underline = 1
+

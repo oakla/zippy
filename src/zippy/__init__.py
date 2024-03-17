@@ -1,5 +1,7 @@
 import os
 import logging
+from .zip import Zippy
+from . import checks
 
 # Define the directory for the log files
 home_path = os.path.expanduser("~")

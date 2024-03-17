@@ -1,42 +1,32 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
+from tkinter import messagebox
 import string
 import random
 import pyperclip
 from typing import Optional
+import logging
+from zippy.settings import Settings
+from zippy import path_management
 
-
-BEST_PRACTICE = False
-
-
-DEFAULT_FONT = {}
-# DEFAULT_FONT["family"] = "Arial"
-DEFAULT_FONT["family"] = "Calibri"
-# DEFAULT_FONT["family"] = "Segoe UI"
-DEFAULT_FONT["size"] = 12
-
-HEADING_FONT = {}
-HEADING_FONT["family"] = "Calibri"
-HEADING_FONT["size"] = 16
-# HEADING_FONT['weight'] = "bold"
-# HEADING_FONT['underline'] = 1
+logger = logging.getLogger(__name__)
 
 
 class ListFrame(tk.Frame):
 
     def __init__(self, parent, list_prelude: str = "") -> None:
         super().__init__(parent, width=400)
-        
+
         label_prelude = tk.Label(self, text=list_prelude)
         label_prelude.grid(column=0, row=0, sticky=tk.W, padx=3, pady=5, columnspan=2)
 
         self.current_row_index = 1
 
-    def add_list_item(self, text, bullet_point="\u2022"):
+    def add_list_item(self, text, bullet_point="\u2022", bullet_width=5):
 
-        label_bullet = tk.Label(self, text=f"{bullet_point}  ", width=5)
-        label_bullet.grid(column=0, row=self.current_row_index, sticky=tk.NW)
+        label_bullet = tk.Label(self, text=f"{bullet_point}  ", width=bullet_width, justify=tk.RIGHT, anchor=tk.E)
+        label_bullet.grid(column=0, row=self.current_row_index, sticky=tk.NE,)
 
         label_item_text = tk.Label(self, text=text, wraplength=500, justify=tk.LEFT)
         label_item_text.grid(column=1, row=self.current_row_index, sticky=tk.NW)
@@ -61,17 +51,66 @@ class NotebookSectionFrame(tk.Frame):
         label_heading.grid(column=0, row=0, padx=5, pady=10)
 
         frame_list = ListFrame(self, list_prelude=list_prelude)
-        frame_list.grid(column=0, row=2, padx=15 , pady=15)
+        frame_list.grid(column=0, row=2, padx=15, pady=15)
 
         for instruction_item in list_items:
             frame_list.add_list_item(
-                text=instruction_item[1], bullet_point=instruction_item[0]
+                text=instruction_item[1], bullet_point=instruction_item[0], 
+            )
+
+
+class AboutSectionFrame(tk.Frame):
+
+    def __init__(
+        self,
+        parent=None,
+    ) -> None:
+        about_heading_text = "📜 About Zippy"
+
+        about_items_prelude = ""
+
+        about_items = [
+            (
+                "What is Zippy:",
+                "Zippy is a utility to help quickly zip and encrypt files and/or folders.",
+            ),
+            (
+                "Version:",
+                "1.2.0",
+            ),
+            (   
+                "Project Source Code:",
+                "https://github.com/CFSCo-Automation/Zippy"
+            ),
+            (
+                "Author:",
+                "Alex Oakley",
+            ),
+        ]
+
+        super().__init__(
+            master=parent,
+        )
+
+        label_heading = tk.Label(self, text=about_heading_text)
+        label_heading["font"] = "TkHeadingFont"
+        label_heading.grid(column=0, row=0, padx=5, pady=10)
+
+        frame_list = ListFrame(self, list_prelude=about_items_prelude)
+        frame_list.grid(column=0, row=2, padx=15, pady=15)
+
+        for instruction_item in about_items:
+            frame_list.add_list_item(
+                text=instruction_item[1], bullet_point=instruction_item[0], bullet_width=20
             )
 
 
 class InstructionsSectionFrame(NotebookSectionFrame):
 
-    def __init__(self, parent=None,) -> None:
+    def __init__(
+        self,
+        parent=None,
+    ) -> None:
 
         instructions_heading_text = "📜 How to use Zippy"
 
@@ -125,6 +164,7 @@ class GuidelinesFrame(NotebookSectionFrame):
 class PasswordChoiceFrame(tk.Frame):
 
     def __init__(self, parent=None) -> None:
+        
         super().__init__(parent)
 
         label_warning = tk.Label(
@@ -137,30 +177,17 @@ class PasswordChoiceFrame(tk.Frame):
         self.warning_contents.set("")
         label_warning["textvariable"] = self.warning_contents
 
-        self.phrase_phrase_words = [
-            "mainframe",
-            "columnconfigure",
-            "rowconfigure",
-            "StringVar",
-            "Button",
-            "Label",
-            "feet_entry",
-            "root",
-        ]
-
         self.secure_key = tk.StringVar()
         self.secure_key.trace_add("write", self.update_password_warning)
-        # frame_guidelines = GuidelinesFrame(self)
-        # frame_guidelines.grid(column=0, row=0)
 
         # Text Entry
-        entry_password = ttk.Entry(
+        self.entry_password = ttk.Entry(
             self,
             width=60,
             textvariable=self.secure_key,
-            font=("Arial", 12),
+            font=("Segoe UI", 12),
         )
-        entry_password.grid(
+        self.entry_password.grid(
             column=0,
             row=2,
             # sticky=(tk.W, tk.E), # type: ignore
@@ -182,7 +209,7 @@ class PasswordChoiceFrame(tk.Frame):
         )
 
         # Generate Random Passphrase
-        if BEST_PRACTICE:
+        if Settings.best_practice():
             button_generate_passphrase = ttk.Button(
                 master=self,
                 text="Generate passphrase",
@@ -195,11 +222,14 @@ class PasswordChoiceFrame(tk.Frame):
                 pady=3,
             )
 
+        self.generate_random_password()
+
     def update_password_warning(self, *args):
         if self.is_secure_key_valid():
             self.warning_contents.set("")
         else:
             self.warning_contents.set("Password must be at least 8 characters long.")
+
 
     def is_secure_key_valid(self):
         current_secure_key_text = self.secure_key.get()
@@ -207,26 +237,49 @@ class PasswordChoiceFrame(tk.Frame):
             return False
         return True
 
+
     def update_with_random_password(self):
         secure_key = self.generate_random_password()
         self.secure_key.set(secure_key)
+
 
     def update_with_random_passphrase(self):
         secure_key = self.generate_passphrase()
         self.secure_key.set(secure_key)
 
+
     def generate_random_password(self, length: int = 14):
         special_characters = "!@#$%^&*()_+?"
 
         characters = string.ascii_letters + string.digits + special_characters
-        password = "".join(random.choice(characters) for i in range(length))
+        password = "".join(random.choice(characters) for _ in range(length))
         return password
 
+
+    def get_phrase_word_list(self):
+        try:
+            logger.debug(
+                f"Attempting to open and read words file ({path_management.words_file_path})."
+            )
+            with open(path_management.words_file_path, "r") as fp:
+                phrase_words = [
+                    x.split("\t")[1] for x in fp.read().splitlines() if len(x) > 1
+                ]
+        except Exception as e:
+            logger.critical(
+                f"Error while opening 'word file' expected at {path_management.words_file_path}: {e}"
+            )
+
+        return phrase_words
+
+
     def generate_passphrase(self, k_words=5):
+        self.phrase_words = self.get_phrase_word_list()
         passpharse = []
         for _ in range(k_words):
-            passpharse.append(random.choice(self.phrase_phrase_words))
+            passpharse.append(random.choice(self.phrase_words))
         return " ".join(passpharse)
+
 
     def get_secure_key(self):
         return self.secure_key.get()
@@ -240,32 +293,25 @@ class ZippyGui:
 
         # Create the main window
         self.root = tk.Tk()
-        self.root.title("Frame Scratch")
+        self.root.title("Zippy")
         # root.geometry("400x400")
 
         tk_default_font = font.nametofont("TkDefaultFont")
-        tk_default_font.config(**DEFAULT_FONT)
+        config_dict = Settings.load_setting_dict()
+        tk_default_font.config(**config_dict["default_font"])
 
         tk_heading_font = font.nametofont("TkHeadingFont")
-        tk_heading_font.config(**HEADING_FONT)
-        # tk_heading_font["size"] = 16
-        # # tk_heading_font['weight'] = 'bold'
-        # tk_heading_font["family"] = "Calibri"
-        # # tk_heading_font['family'] = 'Segoe UI'
-        # # tk_heading_font['underline'] = 1
+        tk_heading_font.config(**config_dict["heading_font"])
 
         # Create a notebook to hold the frames
         notebook = ttk.Notebook(self.root, padding="3 3 12 12", style="TNotebook")
         notebook.grid(column=0, row=0)
         notebook.enable_traversal()
 
-        # !
-        # TODO: connect secure_key to clipboard and zip process path
-        # TODO: connect destroy command to submit button
         # Add the frames to the notebook
         notebook.add(GuidelinesFrame(), text="Guidelines")
         notebook.add(InstructionsSectionFrame(), text="Instructions")
-        notebook.add(self.create_about_frame(), text="About")
+        notebook.add(AboutSectionFrame(), text="About")
 
         style = ttk.Style()
         style.configure(
@@ -281,27 +327,47 @@ class ZippyGui:
         self.password_choice_frame.grid(column=0, row=1)
 
         # Submit Button
-        button_submit = ttk.Button(master=self.root, text="Submit", command=self.submit_and_zip)  # type: ignore
+        button_submit = ttk.Button(master=self.root, text="Submit", command=self.submit_secure_key)  # type: ignore
         button_submit.grid(column=0, row=5, sticky=tk.E, padx=6, pady=6)
 
         self.root.mainloop()
 
-    def create_about_frame(self) -> tk.Frame:
-        about_frame = tk.Frame()
-
-        return about_frame
 
     def create_instrutions_frame(self) -> tk.Frame:
         instructions_frame = tk.Frame()
 
         return instructions_frame
 
-    def submit_and_zip(self):
+    def submit_secure_key(self):
         if not self.password_choice_frame.is_secure_key_valid():
+            self.password_choice_frame.update_password_warning()
             return
-        self.secure_key = self.password_choice_frame.get_secure_key()
-        pyperclip.copy(self.secure_key)
+
+        secure_key = self.password_choice_frame.get_secure_key()
+        # if self.is_common_password(secure_key):
+        #     self.show_common_password_warning()
+        self.close_zippy_gui(secure_key)
+
+
+    # def show_common_password_warning(self):
+    #     messagebox.Message(
+    #         master=self.root,
+    #         text="Password Warning",
+    #         message="Consider choosing a different password",
+    #         details="Your password is included in a list of the 100,000 most commonly used passwords, and therefore is easily crackable.",
+    #         icon=messagebox.WARNING,
+    #     )
+
+    def close_zippy_gui(self, secure_key) -> None:
+        pyperclip.copy(secure_key)
+        self.secure_key = secure_key
         self.root.destroy()
+
+
+    def is_common_password(self, secure_key):
+        with open(path_management.common_passwords_file_path, "r") as fp:
+            bad_passwords = [x.strip() for x in fp.readlines()]
+        return secure_key in bad_passwords
 
 
 if __name__ == "__main__":
