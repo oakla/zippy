@@ -108,7 +108,7 @@ build_exe_options = {
 executables = [
         Executable(
             script=SCRIPT_TO_EXECUTE,
-            copyright="Copyright (C) 2023 CFS Autobots",
+            copyright="",
             base=base,
             icon=ICON_PATH,
         )
@@ -119,10 +119,6 @@ executables = [
 
 # input("About to call `setup(...)`")
 setup(
-    # name="cfs_zippy",
-    # version="1.0.1",
-    # description="Quickly zip and encrypt files and/or folders",
-    # author=AUTHOR,
     url="http://autobots.avanteos.com.au/",
     executables=executables,
     options={

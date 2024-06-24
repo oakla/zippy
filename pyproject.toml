@@ -7,6 +7,6 @@ name = "zippy"
 version = "1.2.0" 
 dependencies = [ "importlib-resources; python_version<\"3.10\"", "pyperclip"] 
 authors=[
-    {name="Alexander Oakley", email="alexander.oakley@cfs.com.au"},
+    {name="Alexander Oakley"},
 ]
 description="Quickly zip and encrypt files and/or folders"

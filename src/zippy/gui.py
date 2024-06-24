@@ -80,7 +80,7 @@ class AboutSectionFrame(tk.Frame):
             ),
             (   
                 "Project Source Code:",
-                "https://github.com/CFSCo-Automation/Zippy"
+                "https://github.com/oakla/zippy"
             ),
             (
                 "Author:",
@@ -142,7 +142,7 @@ class GuidelinesFrame(NotebookSectionFrame):
 
     def __init__(self, parent=None) -> None:
 
-        guidlines_heading_text = "📜 CFS Password Guidelines"
+        guidlines_heading_text = "📜 Password Guidelines"
 
         guidelines_prelude = "Passwords should ideally:"
 
