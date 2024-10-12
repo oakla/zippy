@@ -1,7 +1,9 @@
 # zippy
 
-Drag and drop shortcut to zip and encrypt. Originally built as a way to circumvent the slow load times of the WinZip GUI.
+A drag and drop utility for Windows to zip and encrypt files and folder. Originally built as a way to circumvent the slow load times of the WinZip GUI.
 
+## Installation
+Download and run [the installer](https://github.com/oakla/zippy/releases/download/v1.2.0/zippy-1.2.0-win64.msi). Afterwards, a shortcut icon will appear on your desktop.
 ![alt text](image.png)
 
 ## Usage
